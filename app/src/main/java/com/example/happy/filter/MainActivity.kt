@@ -13,13 +13,13 @@ import android.widget.CheckBox
 import android.widget.HorizontalScrollView
 import com.example.happy.filter.Holders.ParentHolder
 import com.example.happy.filter.Holders.TitleViewHolder
+import com.example.happy.filter.TreeView.Model.TreeNode
+import com.example.happy.filter.TreeView.View.AndroidTreeView
 import com.example.happy.filter.models.BA_Roles_Response
 import com.example.happy.filter.models.DummyData
 import com.example.happy.filter.models.RolesAgent
 import com.example.happy.filter.models.SelectedAgentDetail
 import com.google.gson.Gson
-import com.unnamed.b.atv.model.TreeNode
-import com.unnamed.b.atv.view.AndroidTreeView
 import kotlinx.android.synthetic.main.activity_main.*
 import rx.Single
 import rx.Subscription

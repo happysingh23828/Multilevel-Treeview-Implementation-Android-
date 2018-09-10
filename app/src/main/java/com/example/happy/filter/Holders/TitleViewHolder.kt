@@ -8,7 +8,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import com.example.happy.filter.R
-import com.unnamed.b.atv.model.TreeNode
+import com.example.happy.filter.TreeView.Model.TreeNode
 import kotlinx.android.synthetic.main.single_parent_item.view.*
 
 class TitleViewHolder(context: Context) : TreeNode.BaseNodeViewHolder<String>(context) {
