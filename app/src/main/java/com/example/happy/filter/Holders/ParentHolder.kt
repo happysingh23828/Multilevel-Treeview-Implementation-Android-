@@ -1,6 +1,5 @@
 package com.example.happy.filter.Holders
 
-import android.app.Activity
 import android.content.Context
 import android.os.Build
 import android.support.annotation.RequiresApi
@@ -8,15 +7,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.CheckBox
 import android.widget.ImageView
-import android.widget.RadioGroup
-import android.widget.Toast
 import com.example.happy.filter.MainActivity
 import com.example.happy.filter.R
+import com.example.happy.filter.Treeview.Model.TreeNode
 import com.example.happy.filter.models.BA_Roles_Response
 import com.example.happy.filter.models.DummyData
 import com.example.happy.filter.models.RolesAgent
 import com.google.gson.Gson
-import com.unnamed.b.atv.model.TreeNode
 import kotlinx.android.synthetic.main.single_parent_item.view.*
 import rx.Single
 import rx.Subscription
@@ -24,9 +21,7 @@ import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
 
 class ParentHolder(context: Context) : TreeNode.BaseNodeViewHolder<RolesAgent>(context) {
-    var arrowIcon: ImageView? = null
-    var mActivity = context as MainActivity
-    override fun createNodeView(node: TreeNode?, value: RolesAgent?): View {
+    override fun createNodeView(node: TreeNode?, value: RolesAgent?): View? {
         val inflater = LayoutInflater.from(context)
         val view = inflater.inflate(R.layout.single_parent_item, null, false)
         arrowIcon = view.findViewById(R.id.icon)
@@ -39,16 +34,24 @@ class ParentHolder(context: Context) : TreeNode.BaseNodeViewHolder<RolesAgent>(c
             onCheckBoxStateChange(node!!, b)
         }
 
-        node!!.setClickListener { clickedNode, clickedNodeValue ->
-            //adding agents as children if parent node having has Agents value true
-            var nodeData = clickedNodeValue as RolesAgent
-            if (!(clickedNode!!.children.size > 0)) {
-                if (clickedNode.children.size == 0 && nodeData.hasAgents)
-                    getAgents(clickedNode.level, value.mobile, clickedNode)
+        node!!.setClickListener(object : TreeNode.TreeNodeClickListener{
+            override fun onClick(clickedNode: TreeNode, clickedNodeValue: Any) {
+                //adding agents as children if parent node having has Agents value true
+                var nodeData = clickedNodeValue as RolesAgent
+                if (!(clickedNode!!.children.size > 0)) {
+                    if (clickedNode.children.size == 0 && nodeData.hasAgents)
+                        getAgents(clickedNode.level, value.mobile, clickedNode)
+                }
             }
-        }
+        })
+
         return view
     }
+
+
+    var arrowIcon: ImageView? = null
+    var mActivity = context as MainActivity
+
 
     private fun onCheckBoxStateChange(clickedCheckBoxNode: TreeNode, isChecked: Boolean) {
 
@@ -64,17 +67,17 @@ class ParentHolder(context: Context) : TreeNode.BaseNodeViewHolder<RolesAgent>(c
             changeCheckBoxStateOfChildren(clickedCheckBoxNode, isChecked)
 
         // when parent is selected (Removing its siblings id's from ArrayList and Adding Its Parent Id to ArrayList)
-        if (clickedCheckBoxNode.parent.viewHolder.view.findViewById<CheckBox>(R.id.checkbox).isChecked )
+        if (clickedCheckBoxNode.parent!!.getViewHolder()!!.view.findViewById<CheckBox>(R.id.checkbox).isChecked )
             removeSiblingsFromArrayList(clickedCheckBoxNode)
 
         if(isAllSiblingsSelected(clickedCheckBoxNode)){
             removeSiblingsFromArrayList(clickedCheckBoxNode)
         }
 
-        if(clickedCheckBoxNode.parent.viewHolder.view.findViewById<CheckBox>(R.id.checkbox).isChecked){
+        if(clickedCheckBoxNode.parent!!.getViewHolder()!!.view.findViewById<CheckBox>(R.id.checkbox).isChecked){
             if(!isChecked){
                 if(isAllChildSelected(clickedCheckBoxNode)){
-                   clickedCheckBoxNode.viewHolder.view.findViewById<CheckBox>(R.id.checkbox).isChecked = true
+                   clickedCheckBoxNode!!.getViewHolder()!!.view.findViewById<CheckBox>(R.id.checkbox).isChecked = true
                     mActivity.removeIdFromArrayList(nodeValue.userId.toInt())
                 }
             }
@@ -85,7 +88,7 @@ class ParentHolder(context: Context) : TreeNode.BaseNodeViewHolder<RolesAgent>(c
     private fun onCheckBoxClick(clickedCheckBoxNode: TreeNode, isChecked: Boolean) {
 
         //when parent is selected and all children going to be checked
-        if (clickedCheckBoxNode.parent.viewHolder.view.findViewById<CheckBox>(R.id.checkbox).isChecked) {
+        if (clickedCheckBoxNode.parent!!.getViewHolder()!!.view.findViewById<CheckBox>(R.id.checkbox).isChecked) {
             changeCheckBoxStateOfChildren(clickedCheckBoxNode, true)
             changeCheckBoxStateOfSiblings(clickedCheckBoxNode,true)
         }
@@ -93,7 +96,7 @@ class ParentHolder(context: Context) : TreeNode.BaseNodeViewHolder<RolesAgent>(c
 
         // when all siblings are selected and parent is not selected
         if (isChecked && isAllSiblingsSelected(clickedCheckBoxNode))
-            clickedCheckBoxNode.parent.viewHolder.view.findViewById<CheckBox>(R.id.checkbox).isChecked = true
+            clickedCheckBoxNode.parent!!.getViewHolder()!!.view.findViewById<CheckBox>(R.id.checkbox).isChecked = true
 
 
         //when the hierarchy of  checkboxes needs to be checked or unchecked
@@ -106,27 +109,27 @@ class ParentHolder(context: Context) : TreeNode.BaseNodeViewHolder<RolesAgent>(c
 
        // Changing State of It's Children According to Parent
         for (i in 0 until node.children.size)
-            node.children[i].viewHolder.view.findViewById<CheckBox>(R.id.checkbox).isChecked = isChecked
+            node.children[i]!!.getViewHolder()!!.view.findViewById<CheckBox>(R.id.checkbox).isChecked = isChecked
 
     }
 
     fun changeCheckBoxStateOfSiblings(node: TreeNode, isChecked: Boolean){
         // Changing State of It's Sibling According to Parent
-        for (i in 0 until node.parent.children.size)
-            node.parent.children[i].viewHolder.view.findViewById<CheckBox>(R.id.checkbox).isChecked = isChecked
+        for (i in 0 until node.parent!!.children.size)
+            node.parent!!.children[i]!!.getViewHolder()!!.view.findViewById<CheckBox>(R.id.checkbox).isChecked = isChecked
 
     }
 
     fun removeSiblingsFromArrayList(node: TreeNode) {
 
         //removing children id from ArrayList
-        for (i in 0 until node.parent.children.size) {
-            var nodeValue = node.parent.children[i].value as RolesAgent
+        for (i in 0 until node.parent!!.children.size) {
+            var nodeValue = node.parent!!.children[i].value as RolesAgent
             mActivity.removeIdFromArrayList(nodeValue.userId.toInt())
         }
 
         //Adding parent id to ArrayList
-        var nodeParentValue = node.parent.value as RolesAgent
+        var nodeParentValue = node.parent!!.value as RolesAgent
 
 
        // mActivity.addIdToArrayList(nodeParentValue.userId.toInt())
@@ -134,10 +137,10 @@ class ParentHolder(context: Context) : TreeNode.BaseNodeViewHolder<RolesAgent>(c
     }
 
     fun isAllSiblingsSelected(node: TreeNode): Boolean {
-        var totalSiblingCount = node.parent.children.size
+        var totalSiblingCount = node.parent!!.children.size
         var totalCheckedSibiling = 0
-        for (i in 0 until node.parent.children.size) {
-            if (node.parent.children[i].viewHolder.view.findViewById<CheckBox>(R.id.checkbox).isChecked) {
+        for (i in 0 until node.parent!!.children.size) {
+            if (node.parent!!.children[i]!!.getViewHolder()!!.view.findViewById<CheckBox>(R.id.checkbox).isChecked) {
                 totalCheckedSibiling++
             }
         }
@@ -148,7 +151,7 @@ class ParentHolder(context: Context) : TreeNode.BaseNodeViewHolder<RolesAgent>(c
         var totalChildCount = node.children.size
         var totalCheckedChild = 0
         for (i in 0 until node.children.size) {
-            if (node.children[i].viewHolder.view.findViewById<CheckBox>(R.id.checkbox).isChecked) {
+            if (node.children[i]!!.getViewHolder()!!.view.findViewById<CheckBox>(R.id.checkbox).isChecked) {
                 totalCheckedChild++
             }
         }
@@ -176,11 +179,11 @@ class ParentHolder(context: Context) : TreeNode.BaseNodeViewHolder<RolesAgent>(c
     private fun onGettingResponse(response: BA_Roles_Response?, selectedNode: TreeNode) {
 
         for (i in 0..response!!.roles!!.children.size - 1) {
-            treeView.addNode(selectedNode, TreeNode(response.roles!!.children[i]))
+            treeView!!.addNode(selectedNode, TreeNode(response.roles!!.children[i]))
         }
 
         //if its parent node is  already checked then checking all the children checkboxes
-        if (selectedNode.parent.viewHolder.view.findViewById<CheckBox>(R.id.checkbox).isChecked) {
+        if (selectedNode.parent!!.getViewHolder()!!.view.findViewById<CheckBox>(R.id.checkbox).isChecked) {
             changeCheckBoxStateOfChildren(selectedNode,true)
         }
 

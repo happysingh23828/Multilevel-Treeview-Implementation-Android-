@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <eat-comment/>
+    <item name="node_header" type="id"/>
+    <item name="node_items" type="id"/>
+    <item name="tree_items" type="id"/>
+    <eat-comment/>
+    <style name="TreeNodeStyle">
+        <item name="android:paddingLeft">30dp</item>
+    </style>
+</resources>

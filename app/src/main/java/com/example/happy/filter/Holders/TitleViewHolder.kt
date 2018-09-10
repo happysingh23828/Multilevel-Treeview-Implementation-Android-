@@ -8,20 +8,22 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import com.example.happy.filter.R
-import com.unnamed.b.atv.model.TreeNode
+import com.example.happy.filter.Treeview.Model.TreeNode
 import kotlinx.android.synthetic.main.single_parent_item.view.*
 
 class TitleViewHolder(context: Context) : TreeNode.BaseNodeViewHolder<String>(context) {
-    var arrowIcon : ImageView? = null
-
-    override fun createNodeView(node: TreeNode?, value: String?): View {
+    override fun createNodeView(node: TreeNode?, value: String?): View? {
         val inflater = LayoutInflater.from(context)
         val view = inflater.inflate(R.layout.single_parent_item, null, false)
         arrowIcon = view.findViewById(R.id.icon)
         view.checkbox.visibility = View.GONE
         view.name_of_agent.text = value
-        return  view
+            return  view
     }
+
+
+    var arrowIcon : ImageView? = null
+
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun toggle(active: Boolean) {
